@@ -13,7 +13,7 @@ BErger300<-Berger[2:300,]
 
 ```
 
-Conetiene un archivo de texto plano delitimeado por "tabs" (\t). que cuenta con 8 columnas y 5000 filas correspindientes a 5 millones de años (A.N.E.)
+Conetiene un archivo de texto plano delitimeado por "tabs". que cuenta con 8 columnas y 5000 filas correspindientes a 5 millones de años (A.N.E.)
 
 ```{r}
 colnames(Berger)
@@ -26,7 +26,7 @@ Col 7 : Insolación (W/m2)
 Col 8 : Sum normalized ECC, TILT,-PREC
 
 ```{r pressure, echo=FALSE}
-plot(BErger300$Age..ka.BP.,BErger300$EXI..W.m..2...mid.month.insolation.65N.for.....,main="Radiacón Solar",
+plot(BErger300$Age..ka.BP.,BErger300$EXI..W.m..2...mid.month.insolation.65N.for.....,main="Radiacón Solar (últimos 300,000 años)",
 xlab="Años (ka BP)", ylab = "Insolación (W/m2)",
 type="l",
 col="blue")
