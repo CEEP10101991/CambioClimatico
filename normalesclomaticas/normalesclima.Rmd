@@ -1,0 +1,56 @@
+---
+title: "Normales Climáticas Nevado de Toluca" 
+author: "César Emiliano Escalona Prado"
+output: pdf_document
+---
+SERVICIO METEOROLóGICO NACIONAL
+                                               
+ESTADO DE: MEXICO                                                                                                   PERIODO: 1981-2010
+
+ESTACION: 00015062 NEVADO DE TOLUCA                 
+LATITUD: 19°07'07" N.          
+LONGITUD: 099°46'53" W.          
+ALTURA: 4,283.0 MSNM
+TEMPERATURA MEDIA NORMAL=4.0°C
+PRECIPITACION NORMAL=1,215.9mm
+EVAPORACION TOTAL NORMAL=1,003.6mm
+
+```{r setup, include=FALSE}
+library(data.table)    
+NormalesClimaticas<-data.table(meses=c("ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"), temperatura=c(2.3,2.9,4.4,5.3,5.3,5.2,4.5,4.5,4.3,3.9,3.0,2.5), precipitacion=c(13.6,10.1,7.5,54.6,125.6,205.5,235.4,229.4,209.2,92.1,23.9,9.0),evaporacion=c(91.1,75.7,106.9,100.9,85.3,78.1,80.9,78.5,69.3,74.7,82.6,79.6))
+
+NormalesClimaticas$meses<-factor(NormalesClimaticas$meses,levels=NormalesClimaticas$meses)
+
+NormalesClimaticas
+
+library(ggplot2)
+
+ylim.prim <- c(0, 356)   # in this example, precipitation
+ylim.sec <- c(0, 5.5)    # in this example, temperature
+
+
+b <- diff(ylim.prim)/diff(ylim.sec)
+a <- b*(ylim.prim[1] - ylim.sec[1])
+
+```
+
+```{r pressure, echo=FALSE}
+
+
+ggplot(NormalesClimaticas, aes(x=meses))+
+  geom_point(aes(y = temperatura,group=1), color = "darkred")+
+  geom_line(aes(y = temperatura,group=1), color = "darkred")+ geom_point(aes(y=precipitacion,group=1),color="steelblue",shape=8)+
+  geom_line(aes(y=precipitacion,group=1),color="steelblue",linetype="twodash")+
+geom_point(aes(y=evaporacion,group=1),color="green",shape=9)+
+geom_line(aes(y=evaporacion,group=1),color="green",linetype="dashed")+
+scale_y_continuous("Precipitacion(mm)", sec.axis = sec_axis(~ (. - a)/b, name = "Temperatura(°C)"))+
+theme_dark()+
+  theme(axis.line.y.right = element_line(color = "red"), 
+        axis.ticks.y.right = element_line(color = "red"),
+        axis.text.y.right = element_text(color = "red"), 
+        axis.title.y.right = element_text(color = "red")
+        ) 
+
+
+
+```
