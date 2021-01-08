@@ -1,0 +1,339 @@
+---
+title: "Registro de hielo de Vostok"
+
+---
+César Emiliano Escalona Prado
+
+
+## Profundidad del núcleo respecto a la Edad_del_hielo y Edad_del_gas
+
+```{r setup, include=FALSE}
+
+library(ggplot2)
+library("tidyverse")
+
+vostok<-read.csv("vostok - vos_data.csv")
+vostok
+summary(vostok)
+# Data preparation
+df <- vostok %>%
+  select(profundidad, Edad_del_hielo, Edad_del_gas) %>%
+  gather(key = "Edades", value = "Años_Ka", -profundidad)
+head(df)
+
+ggplot(df, aes(x = profundidad, y = Años_Ka)) + 
+  geom_line(aes(color = Edades, linetype = Edades)) + 
+  scale_color_manual(values = c("darkred", "steelblue"))+
+  theme_dark()
+
+####TEMP
+library(dplyr)
+vosi<-vostok %>% group_by(profundidad) %>%
+                mutate(TEMP_δD = (-55.5 + (delta.D + 440)/ 6))
+vosi 
+
+write.csv(vosi, file="vosi.csv")
+
+
+
+```
+
+
+```{r, echo = FALSE }
+ggplot(df, aes(x = profundidad, y = Años_Ka)) + 
+  geom_line(aes(color = Edades, linetype = Edades)) + 
+  scale_color_manual(values = c("darkred", "steelblue"))+
+  theme_light()
+
+
+
+```
+
+## Cuestionario 
+
+*¿Cuáles son las unidades en ambas escalas de edad?
+
+Miles de años (Ky o Ka) antes del presente
+
+*¿Cuáles son las profundidades de los datos más superficiales y los más
+profundos?
+* 
+Profundidad(metros)          
+Min.   : 130.0 
+Max.   :2060.0 
+
+#¿La edad aumenta o disminuye hacia la parte más profunda del núcleo?
+
+Aumenta ya que conforme mayor sea la profundidad se encuentran capas de hielo que se depositaron antes sobre la superficie
+ 
+
+*¿Porque ambas curvas difieren?
+
+Porque se fundamentan en métodologías distintas, siendo la edad de gas la que indica edades relativamente más "jovenes" según la profundidad.
+
+*¿Que tan joven es una burbuja de gas en comparación con el hielo que la
+rodea a una profundidad de 250 metros?
+ 
+ Es una burbuja de hace 6.79 Ka 
+
+*¿Es el espesor de una capa anual de hielo es mayor en la cima o en la base
+del núcleo? ¿Por qué? explica brevemente.
+
+Cercano a la base las capas se hacen más delgadas debido a la presión que ejerce el resto del hielo sobre estas.
+
+*Si observas cuidadosamente la gráfica es posible ver que hay un cambio en
+la pendiente de la curva entre la cima y la base del núcleo. ¿Qué piensas que
+¿Qué está sucediendo?
+
+Justamente en la gráfica se puede apreciar este adelgazamiento de las capas de la base, por ende el cambio en la edad del hielo para ésta etapa resulta ser mucho más acelerado. 
+
+
+# TEMP_δD vs. Edad del Hielo
+
+```{r, echo = FALSE }
+#### Temp_Max
+vosi2<-vosi %>% filter(TEMP_δD > -52.34)
+#### Temp_Min
+vosi3<-vosi %>% filter(TEMP_δD < -65.26)
+
+
+
+########TEMP_δD vs. Edad Hielo
+
+LMG = data.frame(x1=c(16,31), y1=c(-52.3,-65.26))
+#
+
+ggplot(vosi, aes(y = TEMP_δD, x = Edad_del_hielo))+
+geom_line() +
+theme_light()+
+annotate(geom="text", x=133, y=-51.5, label="T-Max(-52.3°C) hace 133 Ka",color="red")+
+annotate(geom="text", x=19.8, y=-66, label="T-Min(-65.26°C) hace 19.8 Ka",color="blue")+
+geom_point(data=vosi2, mapping=aes(x=133,y=-52.3), color= "red")+
+geom_point(data=vosi3, mapping=aes(x=19.8,y=-65.3), color= "blue")+
+geom_rect(data=LMG, mapping=aes(xmin=16,xmax=31, ymin=-50, ymax= -70), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)+
+annotate(geom="text", x=16, y=-49.5, label="16 a ",color="darkblue")+
+annotate(geom="text", x=31, y=-49.5, label="31 Ka (LGM)",color="darkblue")
+
+
+
+```
+
+###### El sombreado azul indica el rango temporal del último máximo glacial
+
+## Temperaturas 
+
+Temperatura promedio anual en Vostok
+
+#### -55.2
+Como podemos observar la temperatura promedio anual del presente solamente se distancia 3 grados con celsius con respecto a la del Max termal registado en el núcleo
+
+Temperatura Hoy en Vostok
+
+#### -26.11113
+
+Al observar las gráficas y compararla con el momento estimado para el LMG, me parece que esta estimación de temporalidad resulta relativamente confiable, al menos para el periodo de glaciación resulta ser bastante acertada.
+
+
+# CO2 vs. Edad del Gas
+
+```{r, echo = FALSE }
+#### Temp_Max
+vosi4<-vosi %>% filter(CO2 > 291.6)
+#### Temp_Min
+vosi5<-vosi %>% filter(CO2 < 180)
+
+########CO 2 vs. Edad 
+
+ggplot(vosi, aes(y = CO2, x = Edad_del_gas))+
+geom_line() +
+theme_light()+
+annotate(geom="text", x=134, y=293.5, label="Max CO2 291.7 ppmv hace 134 Ka",color="red")+
+annotate(geom="text", x=42.4, y=178.5, label="Min CO2 179.9 ppmv hace 42.4 Ka",color="blue")+
+geom_point(data=vosi5, mapping=aes(x=134,y=292), color= "red")+
+geom_point(data=vosi4, mapping=aes(x=42.4,y=180), color= "blue")+
+geom_rect(data=LMG, mapping=aes(xmin=16,xmax=31, ymin=180, ymax= 292), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)+
+annotate(geom="text", x=16, y=293.5, label="16 a ",color="darkblue")+
+annotate(geom="text", x=31, y=293.5, label="31 Ka (LGM)",color="darkblue")
+
+
+
+```
+
+###### El sombreado azul indica el rango temporal del último máximo glacial
+
+# CO2 vs. TEMP_δD
+
+```{r, echo = FALSE }
+
+########CO 2 vs. TEMP_δD 
+
+ggplot(vosi, aes(x = CO2, y = TEMP_δD))+
+geom_point() +
+theme_light()+
+   geom_smooth(color="red")+
+   geom_smooth(method = "lm", se = FALSE)
+
+
+cor.test(vosi$CO2, vosi$TEMP_δD, method = "pearson", conf.level = 0.95)
+
+
+
+```
+
+Según la prueba de correlación de pearson los datos de CO2 y los de temperatura se correlaciona de manera positiva por encima del azar, con un valor de 0.7409801
+
+# CH4 vs. Edad del Gas
+
+```{r, echo = FALSE }
+#### Temp_Max
+vosi6<-vosi %>% filter(CH4 < 318.3 )
+#### Temp_Min
+vosi7<-vosi %>% filter(CH4 > 693.4)
+
+########CO 2 vs. Edad 
+
+ggplot(vosi, aes(y = CH4, x = Edad_del_gas))+
+geom_line() +
+theme_light()+
+annotate(geom="text", x=114, y=696, label="Max CH4 693.4 ppmv hace 134 Ka",color="red")+
+annotate(geom="text", x=130, y=316, label="Min CH4 318.2 ppmv hace 150 Ka",color="blue")+
+geom_point(data=vosi5, mapping=aes(x=134,y=693.4), color= "red")+
+geom_point(data=vosi4, mapping=aes(x=150,y=318.2), color= "blue")+
+geom_rect(data=LMG, mapping=aes(xmin=16,xmax=31, ymin=317, ymax= 694), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)+
+annotate(geom="text", x=16, y=697, label="16 a ",color="darkblue")+
+annotate(geom="text", x=31, y=697, label="31 Ka (LGM)",color="darkblue")
+
+
+
+```
+
+###### El sombreado azul indica el rango temporal del último máximo glacial
+
+# CH4 vs. TEMP_δD
+
+```{r, echo = FALSE }
+
+########CH4 vs. TEMP_δD 
+
+ggplot(vosi, aes(x = CH4, y = TEMP_δD))+
+geom_point() +
+theme_light()+
+   geom_smooth(color="red")+
+   geom_smooth(method = "lm", se = FALSE)
+
+
+cor.test(vosi$CH4, vosi$TEMP_δD, method = "pearson", conf.level = 0.95)
+
+
+
+```
+Según la prueba de correlación de pearson los datos de CH4 y los de temperatura se correlaciona de manera positiva por encima del azar, con un valor de 0.7409801
+
+# Polvo/Edad_del_hielo vs TEMP_δ/Edad Hielo
+
+```{r, echo = FALSE }
+
+########polvo/Edad_del_hielo vs temperatura vs TEMP_δ/Edad Hielo
+par(mfrow = c(1,2))
+
+ggplot(vosi, aes(y = polvo,  x= Edad_del_hielo))+
+geom_line() +
+theme_light()
+
+ ggplot(vosi, aes(y = TEMP_δD, x = Edad_del_hielo))+
+geom_line() +
+theme_light()
+
+cor.test(vosi$polvo, vosi$TEMP_δD, method = "pearson", conf.level = 0.95)
+
+
+
+```
+Según la prueba de correlación de pearson los datos de Polvo y los de temperatura se correlaciona de manera negativa por encima del azar, con un valor de - 0.6370759, de esta manera y conforme lo que se puede apreciar en las gráficas que se muestran en la parte superior, los valores de polvo tienden a disminuir conforme aumenta la temperatura y viceversa
+
+
+## Diferencias entre CO2 y CH4 para tiempos
+
+Entre la concentración actual de CO2 y la del Siglo XVIII hay una diferencia de 119.44 ppmv y las de CH4 es de 1180.72 ppbv en comparación con las concentraciones del LGM el CO2 tiene una diferencia de 188.21 ppmv con respecto a la actual y el CH4 una de 285.51 ppbv, estas bajas de CO2 durante el LGM corresponden con los eventos de retención de carbono que se suscitaron durante el último período glacial. 
+
+CO 2 vs. TEMP_δD Extrapolación
+```{r, echo = FALSE }
+
+########CO 2 vs. TEMP_δD 
+
+ggplot(vosi, aes(x = CO2, y = TEMP_δD))+
+geom_point() +
+theme_light()+
+   geom_smooth(color="red")+
+   geom_smooth(method = "lm", se = FALSE,fullrange=TRUE)+
+   xlim(170, 400)+
+  geom_point(mapping=aes(x=385.5,y=-55.2), color= "gold")
+
+
+
+
+
+
+```
+
+CH4 vs. TEMP_δD Extrapolación
+
+```{r, echo = FALSE }
+
+########CO 2 vs. TEMP_δD 
+
+ggplot(vosi, aes(x = CH4, y = TEMP_δD))+
+geom_point() +
+theme_light()+
+   geom_smooth(color="red")+
+   geom_smooth(method = "lm", se = FALSE,fullrange=TRUE)+
+   xlim(300, 1800)+
+  geom_point(mapping=aes(x=1774,y=-55.2), color= "gold")
+
+```
+
+Si se hace la extrapolación de la regresión lineal es evidente que los valores de temperatura promedio para Vostok no empatan con los sugeridos por la regresión lineal. Sin embargo cabe resaltar que para ambos casos (metano y dióxido de carbono) existe una evidente correlación positiva entre sus valores y la temperatura.
+
+## Cambio de Temp vs. edad del hielo
+
+```{r, echo = FALSE }
+
+########CO 2 vs. TEMP_δD 
+
+vostox<-read.csv("vostox.csv")
+
+ggplot(vostox, aes(x = Edad_del_hielo, y = tazaTemp),na.rm = TRUE)+
+geom_line()+
+geom_rect(data=LMG, mapping=aes(xmin=14,xmax=15, ymin=-10, ymax= 10), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)
+
+```
+## δ_CO2 vs. edad del gas
+```{r, echo = FALSE }
+
+########δ_CO2 vs. TEMP_δD 
+
+ggplot(vostox, aes(x = Edad_del_gas, y = tazaCO2),na.rm = TRUE)+
+geom_line()+
+geom_rect(data=LMG, mapping=aes(xmin=14,xmax=15, ymin=-20, ymax= 20), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)
+
+```
+## δ_CH4 vs. edad del gas
+```{r, echo = FALSE }
+
+########δ_CO2 vs. TEMP_δD 
+
+ggplot(vostox, aes(x = Edad_del_gas, y = tazaCH4),na.rm = TRUE)+
+geom_line()+
+geom_rect(data=LMG, mapping=aes(xmin=14,xmax=15, ymin=-30, ymax= 100), fill= "darkblue", alpha=0.2,inherit.aes =FALSE)
+
+```
+
+
+A partir de las tasas de cambio se evidencia que durante los procesos de deglaciación hay un aumento de CO2 y CH4 que posteriormente es acompañado por un aumento en la temperatura. En la taza de temperatura también se refleja una especie de bajada en la tasa de calentamiento o un enfriamiento posterior manteniendo en general  una tendencia similar, sin embargo para las tasas de acumulación actuales la tendencia en general no se estabiliza (continúan creciendo).
+
+En cuanto al crecimiento y decaimiento de CO2 y CH4 representado en este núcleo, es evidente un comportamiento cíclico, entre periodos glaciares e interglaciares, hay una subida considerable de estos gei y posteriormente una estabilización de estos gases hasta llegar a una periodo de descenso notable para que posteriormente se restablezca el ciclo con una elevación en la concentración de estos gases. 
+
+
+
+
+
